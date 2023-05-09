@@ -22,6 +22,30 @@ namespace GPT_EMSSystem.Controllers
             _dbContext = dbContext;
         }
 
+        //[HttpGet("list")]
+        //// [Authorize(Roles = "Admin, Manager, Employee")]
+        //public async Task<ActionResult<IEnumerable<Employee>>> GetEmployees()
+        //{
+        //    var employee = await _dbContext.Employees.ToListAsync();
+
+        //    return Ok(employee);
+        //}
+
+        [HttpPost("list")]
+        // [Authorize(Roles = "Admin, Manager, Employee")]
+        public async Task<ActionResult<IEnumerable<Employee>>> GetEmployees([FromBody] EmployeeFilter filter)
+        {
+            var employees = await _dbContext.Employees
+       .Where(e => string.IsNullOrEmpty(filter.Name) || e.FirstName.Contains(filter.Name) || e.LastName.Contains(filter.Name))
+       .Where(e => string.IsNullOrEmpty(filter.Role) || e.Role.Contains(filter.Role))
+       .Where(e => string.IsNullOrEmpty(filter.Department) || e.Department.Name.Contains(filter.Department))
+       .ToListAsync();
+
+
+            return Ok(employees);
+        }
+
+
         [HttpGet("{id}")]
         // [Authorize(Roles = "Admin, Manager, Employee")]
         public async Task<ActionResult<Employee>> GetEmployeeById(int id)
@@ -40,7 +64,7 @@ namespace GPT_EMSSystem.Controllers
         // [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateEmployee([FromBody] EmployeeCreateModel model)
         {
-            var existing =  await _dbContext.Employees.Where(x => x.Email == model.Email).FirstOrDefaultAsync();
+            var existing = await _dbContext.Employees.Where(x => x.Email == model.Email).FirstOrDefaultAsync();
 
             if (existing != null)
             {

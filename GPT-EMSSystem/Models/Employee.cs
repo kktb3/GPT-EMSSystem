@@ -33,7 +33,7 @@ namespace GPT_EMSSystem.Models
         [Required]
         public int DepartmentId { get; set; }
 
-        //public Department Department { get; set; }
+        public Department Department { get; set; }
 
         //public ICollection<Attendance> AttendanceRecords { get; set; }
 
